@@ -65,8 +65,7 @@ def register():
             try:
                 db.execute(
                     "INSERT INTO user (username, password) VALUES (?, ?)",
-                    (username, generate_password_hash(password)),
-                )
+                    (username, generate_password_hash(password)),)
                 db.commit()
             except db.IntegrityError:
                 # The username was already taken, which caused the
