@@ -1,8 +1,11 @@
+from flask.app import Flask
 import pytest
 from flask import g
 from flask import session
 from flaskr.db import get_db
 from werkzeug.security import check_password_hash
+
+
 
 
 def test_register(client, app):
@@ -23,16 +26,17 @@ def test_register(client, app):
 @pytest.mark.parametrize(
     ("username", "password", "message"),
     (
-        ("", "", b"Username is required."),
-        ("a", "", b"Password is required."),
-        ("test", "test", b"already registered"),
+        ("", "", "Nombre de usuario es requerido."),
+        ("a", "", "Contraseña es requerida."),
+        ("test", "test", "ya esta registrado"),
     ),
 )
 def test_register_validate_input(client, username, password, message):
     response = client.post(
         "/auth/register", data={"username": username, "password": password}
     )
-    assert message in response.data
+    assert message in response.data.decode() 
+    # decode sirve para decodificar y pasar a nuestro idioma los mensajes 
 
 
 def test_login(client, auth):
@@ -53,11 +57,12 @@ def test_login(client, auth):
 
 @pytest.mark.parametrize(
     ("username", "password", "message"),
-    (("a", "test", b"Incorrect username."), ("test", "a", b"Incorrect password.")),
+    (("a", "test", "Nombre de usuario o contraseña incorrecta"), 
+     ("test", "a", "Nombre de usuario o contraseña incorrecta")),
 )
 def test_login_validate_input(auth, username, password, message):
     response = auth.login(username, password)
-    assert message in response.data
+    assert message in response.data.decode()
 
 
 def test_logout(client, auth):
