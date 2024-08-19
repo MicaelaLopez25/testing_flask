@@ -61,6 +61,8 @@ def register():
             error = "Nombre de usuario es requerido.."
         elif not password:
             error = "Contraseña es requerida."
+        elif not verifypassword:
+            error = "La verificacion de contraseña es requerida."
         elif  verifypassword != password:
             error = "Contraseñas distintas."
 
