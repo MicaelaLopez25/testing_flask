@@ -13,7 +13,7 @@ def test_register(client, app):
     assert client.get("/auth/register").status_code == 200
 
     # test that successful registration redirects to the login page
-    response = client.post("/auth/register", data={"username": "a", "password": "b"})
+    response = client.post("/auth/register", data={"username": "a", "password": "b", "verifypassword": "c"})
     assert response.headers["Location"] == "/auth/login"
 
     # test that the user was inserted into the database
@@ -24,16 +24,17 @@ def test_register(client, app):
 
 
 @pytest.mark.parametrize(
-    ("username", "password", "message"),
+    ("username", "password", "message", "verifypassword"),
     (
         ("", "", "Nombre de usuario es requerido."),
         ("a", "", "Contraseña es requerida."),
         ("test", "test", "ya esta registrado"),
+        ("c", "", "Contraseñas distintas." )
     ),
 )
-def test_register_validate_input(client, username, password, message):
+def test_register_validate_input(client, username, password, message, verifypassword):
     response = client.post(
-        "/auth/register", data={"username": username, "password": password}
+        "/auth/register", data={"username": username, "password": password, "verifypassword": verifypassword}
     )
     assert message in response.data.decode() 
     # decode sirve para decodificar y pasar a nuestro idioma los mensajes 
