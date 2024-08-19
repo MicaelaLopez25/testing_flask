@@ -13,7 +13,7 @@ def test_register(client, app):
     assert client.get("/auth/register").status_code == 200
 
     # test that successful registration redirects to the login page
-    response = client.post("/auth/register", data={"username": "a", "password": "b", "verifypassword": "b"})
+    response = client.post("/auth/register", data={"username": "a", "password": "b", "verifypassword": "b", "email": "gmail.com"})
     assert response.headers["Location"] == "/auth/login"
 
     # test that the user was inserted into the database
@@ -24,18 +24,20 @@ def test_register(client, app):
 
 
 @pytest.mark.parametrize(
-    ("username", "password", "verifypassword", "message"),
+    ("username", "password", "verifypassword", "message", "email"),
     (
-        ("", "", "", "Nombre de usuario es requerido."),
-        ("a", "", "", "Contraseña es requerida."),
-        ("a", "1234", "", "La verificacion de contraseña es requerida."),
-        ("test", "test", "test", "ya esta registrado"),
-        ("c", "1234", "4321", "Contraseñas distintas." )
+        ("", "", "", "Nombre de usuario es requerido.","gmail.com"),
+        ("a", "", "", "Contraseña es requerida.", "gmail.com"),
+        ("a", "1234", "", "La verificacion de contraseña es requerida.","gmail.com"),
+        ("test", "test", "test", "ya esta registrado", "gmail.com"),
+        ("c", "1234", "4321", "Contraseñas distintas.", "gmail.com"),
+        ("a", "b", "b", "El email es requerido", "" ),
+        ("test", "test", "test", "El email ya esta registrado.", "test" )
     ),
 )
-def test_register_validate_input(client, username, password, message, verifypassword):
+def test_register_validate_input(client, username, password, message, verifypassword, email):
     response = client.post(
-        "/auth/register", data={"username": username, "password": password, "verifypassword": verifypassword}
+        "/auth/register", data={"username": username, "password": password, "verifypassword": verifypassword, "email": email }
     )
     assert message in response.data.decode() 
     # decode sirve para decodificar y pasar a nuestro idioma los mensajes 
@@ -58,9 +60,11 @@ def test_login(client, auth):
 
 
 @pytest.mark.parametrize(
-    ("username", "password", "message"),
-    (("a", "test", "Nombre de usuario o contraseña incorrecta"), 
-     ("test", "a", "Nombre de usuario o contraseña incorrecta")),
+    ("username", "password", "message","email"),
+    (("a", "test", "Nombre de usuario o contraseña incorrecta",""), 
+     ("test", "a", "Nombre de usuario o contraseña incorrecta", ""),
+     ("a", "b", "Email incorrecto","test"),
+     ),
 )
 def test_login_validate_input(auth, username, password, message):
     response = auth.login(username, password)
