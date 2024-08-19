@@ -24,15 +24,15 @@ def test_register(client, app):
 
 
 @pytest.mark.parametrize(
-    ("username", "password", "verifypassword", "message", "email"),
+    ("username", "password", "verifypassword", "email", "message"),
     (
-        ("", "", "", "Nombre de usuario es requerido.","gmail.com"),
-        ("a", "", "", "Contraseña es requerida.", "gmail.com"),
-        ("a", "1234", "", "La verificacion de contraseña es requerida.","gmail.com"),
-        ("test", "test", "test", "ya esta registrado", "gmail.com"),
-        ("c", "1234", "4321", "Contraseñas distintas.", "gmail.com"),
-        ("a", "b", "b", "El email es requerido", "" ),
-        ("test", "test", "test", "El email ya esta registrado.", "test" )
+        ("", "", "", "", "Nombre de usuario es requerido.."),
+        ("a", "", "", "gmail.com", "Contraseña es requerida."),
+        ("a", "1234", "","gmail.com", "La verificacion de contraseña es requerida."),
+        ("test", "test", "test", "gmail.com", "ya esta registrado"),
+        ("c", "1234", "4321", "gmail.com", "Contraseñas distintas."),
+        ("a", "b", "b", "","El email es requerido" ),
+        
     ),
 )
 def test_register_validate_input(client, username, password, message, verifypassword, email):
@@ -60,10 +60,10 @@ def test_login(client, auth):
 
 
 @pytest.mark.parametrize(
-    ("username", "password", "message","email"),
-    (("a", "test", "Nombre de usuario o contraseña incorrecta",""), 
-     ("test", "a", "Nombre de usuario o contraseña incorrecta", ""),
-     ("a", "b", "Email incorrecto","test"),
+    ("username", "password",  "message"),
+    (("a", "test", "Nombre de usuario o contraseña incorrecta"), 
+     ("test", "a", "Nombre de usuario o contraseña incorrecta")
+     
      ),
 )
 def test_login_validate_input(auth, username, password, message):

@@ -54,6 +54,7 @@ def register():
         username = request.form["username"]
         password = request.form["password"]
         verifypassword = request.form["verifypassword"]
+        email = request.form['email']
         db = get_db()
         error = None
 
@@ -65,12 +66,14 @@ def register():
             error = "La verificacion de contraseña es requerida."
         elif  verifypassword != password:
             error = "Contraseñas distintas."
+        elif not email:
+            error = "El email es requerido"
 
         if error is None:
             try:
                 db.execute(
-                    "INSERT INTO user (username, password) VALUES (?, ?)",
-                    (username, generate_password_hash(password)),)
+                    "INSERT INTO user (username, password, verifypassword, email ) VALUES (?, ?, ?, ?)",
+                    (username, generate_password_hash(password),verifypassword, email ),)
                 db.commit()
             except db.IntegrityError:
                 # The username was already taken, which caused the
@@ -99,6 +102,7 @@ def login():
 
         if user is None or not check_password_hash(user["password"], password):
             error = "Nombre de usuario o contraseña incorrecta"
+
 
         if error is None:
             # store the user id in a new session and return to the index
